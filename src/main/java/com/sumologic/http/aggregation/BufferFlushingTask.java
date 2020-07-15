@@ -27,8 +27,8 @@
 package com.sumologic.http.aggregation;
 
 import com.sumologic.http.queue.BufferWithEviction;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+//import org.apache.logging.log4j.LogManager;
+//import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +37,7 @@ import java.util.List;
  * Task to perform a single flushing check
  */
 public abstract class BufferFlushingTask<In, Out> implements Runnable {
-    private static final Logger logger = LogManager.getRootLogger();
+    //private static final Logger logger = LogManager.getRootLogger();
     private long timeOfLastFlush = System.currentTimeMillis();
     private BufferWithEviction<In> messageQueue;
 
@@ -54,10 +54,10 @@ public abstract class BufferFlushingTask<In, Out> implements Runnable {
         messageQueue.drainTo(messages);
 
         if (messages.size() > 0) {
-            logger.debug(String.format("%s - Flushing and sending out %d messages (%d messages left)",
-                    new java.util.Date(),
-                    messages.size(),
-                    messageQueue.size()));
+            //logger.debug(String.format("%s - Flushing and sending out %d messages (%d messages left)",
+            //        new java.util.Date(),
+            //        messages.size(),
+            //        messageQueue.size()));
             Out body = aggregate(messages);
             sendOut(body);
             timeOfLastFlush = System.currentTimeMillis();
@@ -88,7 +88,7 @@ public abstract class BufferFlushingTask<In, Out> implements Runnable {
                 flushAndSend();
             }
             catch (Exception e) {
-                logger.warn("Exception while attempting to flush and send", e);
+                //logger.warn("Exception while attempting to flush and send", e);
             }
         }
     }

@@ -38,15 +38,15 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.util.EntityUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+//import org.apache.logging.log4j.LogManager;
+//import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.regex.Pattern;
 
 
 public class SumoHttpSender {
-    private static final Logger logger = LogManager.getRootLogger();
+    //private static final Logger logger = LogManager.getRootLogger();
 
     private static final String SUMO_SOURCE_NAME_HEADER = "X-Sumo-Name";
     private static final String SUMO_SOURCE_CATEGORY_HEADER = "X-Sumo-Category";
@@ -175,7 +175,7 @@ public class SumoHttpSender {
             HttpResponse response = httpClient.execute(post);
             int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode != 200) {
-                logger.warn("Received non-200 response code from Sumo Service: " + statusCode);
+                //logger.warn("Received non-200 response code from Sumo Service: " + statusCode);
                 // Not success. Only retry if status matches retryableHttpCodeRegex
                 if (retryableHttpCodeRegexPattern.matcher(String.valueOf(statusCode)).find()) {
                     //need to consume the body if you want to re-use the connection.
@@ -183,19 +183,19 @@ public class SumoHttpSender {
                     throw new IOException("Encountered retryable status code: " + statusCode);
                 }
             } else {
-                logger.debug("Successfully sent log request to Sumo Logic");
+                //logger.debug("Successfully sent log request to Sumo Logic");
             }
             //need to consume the body if you want to re-use the connection.
             EntityUtils.consume(response.getEntity());
         } catch (ClientProtocolException e) {
-            logger.warn("Dropping message due to invalid URL: " + url);
+            //logger.warn("Dropping message due to invalid URL: " + url);
             try {
                 post.abort();
             } catch (Exception ignore) { }
             // Don't throw exception any further
         } catch (IOException e) {
-            logger.warn("Could not send log to Sumo Logic. Reason: " + e.getMessage());
-            logger.debug(e);
+            //logger.warn("Could not send log to Sumo Logic. Reason: " + e.getMessage());
+            //logger.debug(e);
             try {
                 post.abort();
             } catch (Exception ignore) { }

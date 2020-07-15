@@ -28,8 +28,8 @@ package com.sumologic.http.sender;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+//import org.apache.logging.log4j.LogManager;
+//import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -41,7 +41,7 @@ import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 
 public class AggregatingHttpHandler implements HttpHandler {
-    private static final Logger logger = LogManager.getRootLogger();
+    //private static final Logger logger = LogManager.getRootLogger();
     private static String REQUEST_ENCODING = "UTF-8";
     private List<MaterializedHttpRequest> exchanges = new ArrayList<MaterializedHttpRequest>();
     private Queue<Integer> forceReturnCodes = new ArrayBlockingQueue<Integer>(100);
@@ -73,13 +73,13 @@ public class AggregatingHttpHandler implements HttpHandler {
         if (!forceReturnCodes.isEmpty()) {
             int returnCode = forceReturnCodes.poll();
             if (returnCode == HttpURLConnection.HTTP_OK) {
-                logger.debug("Handling exchange " + httpExchange);
+                //logger.debug("Handling exchange " + httpExchange);
                 exchanges.add(requestFor(httpExchange));
             }
             httpExchange.sendResponseHeaders(returnCode, 0);
             httpExchange.close();
         } else {
-            logger.debug("Handling exchange " + httpExchange);
+            //logger.debug("Handling exchange " + httpExchange);
             exchanges.add(requestFor(httpExchange));
             httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
             httpExchange.close();

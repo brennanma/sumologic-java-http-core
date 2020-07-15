@@ -28,13 +28,13 @@ package com.sumologic.http.sender;
 
 import com.sumologic.http.aggregation.BufferFlushingTask;
 import com.sumologic.http.queue.BufferWithEviction;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+//import org.apache.logging.log4j.LogManager;
+//import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 
 public class SumoBufferFlushingTask extends BufferFlushingTask<String, String> {
-    private static final Logger logger = LogManager.getRootLogger();
+    //private static final Logger logger = LogManager.getRootLogger();
     private SumoHttpSender sender;
     private long maxFlushIntervalMs;
     private long messagesPerRequest;
@@ -77,10 +77,10 @@ public class SumoBufferFlushingTask extends BufferFlushingTask<String, String> {
     @Override
     protected void sendOut(String body) {
         if (sender != null && sender.isInitialized()) {
-            logger.debug("Sending out data");
+            //logger.debug("Sending out data");
             sender.send(body);
         } else {
-            logger.error("HTTPSender is not initialized");
+            //logger.error("HTTPSender is not initialized");
         }
     }
 }

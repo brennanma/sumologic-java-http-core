@@ -33,11 +33,11 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+//import org.apache.logging.log4j.LogManager;
+//import org.apache.logging.log4j.Logger;
 
 public class HttpProxySettingsCreator {
-    private static final Logger logger = LogManager.getRootLogger();
+    //private static final Logger logger = LogManager.getRootLogger();
     private ProxySettings proxySettings;
 
     public HttpProxySettingsCreator(ProxySettings proxySettings) {
@@ -49,7 +49,7 @@ public class HttpProxySettingsCreator {
         try {
             host = java.net.InetAddress.getLocalHost().getHostName();
         } catch (Exception e) {
-            logger.error("Unable to obtain local hostname. Defaulting to localhost", e);
+            //logger.error("Unable to obtain local hostname. Defaulting to localhost", e);
         }
         return host;
     }
