@@ -33,7 +33,7 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * A queue with a maximum capacity, where capacity is defined as the sum of the lengths of the
  * strings it contains.  It implements a strict subset of the functionality of interface
- * <tt>java.util.Queue</tt>
+ * <code>java.util.Queue</code>
  */
 public class CostBoundedConcurrentQueue<T> {
 

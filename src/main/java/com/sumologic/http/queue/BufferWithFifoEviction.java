@@ -63,7 +63,7 @@ public class BufferWithFifoEviction<T> extends BufferWithEviction<T> {
     }
 
     /**
-     * Make room for inserting an element with cost <tt>cost</tt>
+     * Make room for inserting an element with cost <code>cost</code>
      * @param cost the desired cost to evict
      * @return true if eviction was successful, false otherwise.
      */
