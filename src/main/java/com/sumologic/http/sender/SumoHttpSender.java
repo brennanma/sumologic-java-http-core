@@ -148,7 +148,8 @@ public class SumoHttpSender {
 
         HttpClientBuilder builder = HttpClients.custom()
                 .setConnectionManager(poolingHttpClientConnectionManager)
-                .setDefaultRequestConfig(requestConfig);
+                .setDefaultRequestConfig(requestConfig)
+                .disableAutomaticRetries();
 
         if (proxySettings != null) {
             HttpProxySettingsCreator creator = new HttpProxySettingsCreator(proxySettings);
