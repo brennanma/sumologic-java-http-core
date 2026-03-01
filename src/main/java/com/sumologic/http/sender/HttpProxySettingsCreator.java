@@ -28,13 +28,13 @@ package com.sumologic.http.sender;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.http.HttpHost;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.NTCredentials;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.hc.core5.http.HttpHost;
+import org.apache.hc.client5.http.auth.AuthScope;
+import org.apache.hc.client5.http.auth.NTCredentials;
+import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
+//import org.apache.hc.client5.http.auth.CredentialsProvider;
+import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 
 public class HttpProxySettingsCreator {
     private static final Logger logger = LoggerFactory.getLogger(HttpProxySettingsCreator.class);
@@ -54,19 +54,19 @@ public class HttpProxySettingsCreator {
         return host;
     }
 
-    private CredentialsProvider createCredentialsProvider() {
+    private BasicCredentialsProvider createCredentialsProvider() {
         String username = proxySettings.getUsername();
-        String password = proxySettings.getPassword();
+        char[] password = proxySettings.getPassword().toCharArray();
         String domain = proxySettings.getDomain();
 
         if (ProxySettings.BASIC_AUTH.equals(proxySettings.getAuthType())) {
-            CredentialsProvider credsProvider = new BasicCredentialsProvider();
+            BasicCredentialsProvider credsProvider = new BasicCredentialsProvider();
             credsProvider.setCredentials(
                     new AuthScope(proxySettings.getHostname(), proxySettings.getPort()),
                     new UsernamePasswordCredentials(username, password));
             return credsProvider;
         } else if (ProxySettings.NTLM_AUTH.equals(proxySettings.getAuthType())) {
-            CredentialsProvider credsProvider = new BasicCredentialsProvider();
+            BasicCredentialsProvider credsProvider = new BasicCredentialsProvider();
             credsProvider.setCredentials(
                     new AuthScope(proxySettings.getHostname(), proxySettings.getPort()),
                     new NTCredentials(username, password, hostname(), domain));
@@ -88,7 +88,7 @@ public class HttpProxySettingsCreator {
             builder.setProxy(host);
 
             if (proxyAuth != null) {
-                CredentialsProvider credsProvider = createCredentialsProvider();
+                BasicCredentialsProvider credsProvider = createCredentialsProvider();
                 builder.setDefaultCredentialsProvider(credsProvider);
             }
         }

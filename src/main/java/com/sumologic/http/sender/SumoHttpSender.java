@@ -28,22 +28,25 @@ package com.sumologic.http.sender;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.http.Consts;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.config.CookieSpecs;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
-import org.apache.http.util.EntityUtils;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.ClientProtocolException;
+import org.apache.hc.client5.http.cookie.StandardCookieSpec;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.config.ConnectionConfig;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.core5.http.io.entity.StringEntity;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.apache.hc.core5.util.Timeout;
 
 import java.io.IOException;
 import java.util.regex.Pattern;
-
+import java.util.concurrent.TimeUnit;
+import java.nio.charset.StandardCharsets;
 
 public class SumoHttpSender {
     private static final Logger logger = LoggerFactory.getLogger(SumoHttpSender.class);
@@ -57,6 +60,7 @@ public class SumoHttpSender {
     private long retryIntervalMs = 10000L;
     private int maxNumberOfRetries = -1;
     private int connectionTimeoutMs = 1000;
+    private int responseTimeoutMs = 5000;
     private int socketTimeoutMs = 60000;
     private String url = null;
     private String sourceName = null;
@@ -128,13 +132,22 @@ public class SumoHttpSender {
 
     public void init() {
         RequestConfig requestConfig = RequestConfig.custom()
-                .setSocketTimeout(socketTimeoutMs)
-                .setConnectTimeout(connectionTimeoutMs)
-                .setCookieSpec(CookieSpecs.STANDARD)
+                .setConnectionRequestTimeout(connectionTimeoutMs, TimeUnit.MILLISECONDS)
+                .setResponseTimeout(responseTimeoutMs, TimeUnit.MILLISECONDS)
+                .setCookieSpec(StandardCookieSpec.RELAXED)
+                .build();
+
+        ConnectionConfig connectionConfig = ConnectionConfig.custom()
+                .setConnectTimeout(Timeout.ofMilliseconds(connectionTimeoutMs))
+                .setSocketTimeout(Timeout.ofMilliseconds(socketTimeoutMs))
+                .build();
+
+        PoolingHttpClientConnectionManager poolingHttpClientConnectionManager = PoolingHttpClientConnectionManagerBuilder.create()
+                .setDefaultConnectionConfig(connectionConfig)
                 .build();
 
         HttpClientBuilder builder = HttpClients.custom()
-                .setConnectionManager(new PoolingHttpClientConnectionManager())
+                .setConnectionManager(poolingHttpClientConnectionManager)
                 .setDefaultRequestConfig(requestConfig);
 
         if (proxySettings != null) {
@@ -194,9 +207,9 @@ public class SumoHttpSender {
             safeSetHeader(post, SUMO_SOURCE_HOST_HEADER, sourceHost);
             safeSetHeader(post, SUMO_CLIENT_HEADER, clientHeaderValue);
             safeSetHeader(post, SUMO_FIELDS_HEADER, fieldsHeaderValue);
-            post.setEntity(new StringEntity(body, Consts.UTF_8));
-            HttpResponse response = httpClient.execute(post);
-            int statusCode = response.getStatusLine().getStatusCode();
+            post.setEntity(new StringEntity(body, StandardCharsets.UTF_8));
+            CloseableHttpResponse response = httpClient.execute(post);
+            int statusCode = response.getCode();
             if (statusCode != 200) {
                 logger.warn("Received non-200 response code from Sumo Service: " + statusCode);
                 // Not success. Only retry if status matches retryableHttpCodeRegex
